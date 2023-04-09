@@ -8,33 +8,36 @@ import { StyleSheet,
         TouchableOpacity, 
         ImageBackground, 
         TouchableWithoutFeedback,
-        Keyboard } from "react-native";
+        Image,
+        Keyboard} from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 const initialState = {
+  login: "",
   email: "",
   password: "",
 };
 
-const LoginScreen = ({ navigation }) => {
+const RegistrationScreen = ({ navigation }) => {
   useEffect(() => {
-    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
-      setIsShowKeyboard(true);
-    });
-    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      setIsShowKeyboard(false);
-    });
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
+      const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+        setIsShowKeyboard(true);
+      });
+      const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+        setIsShowKeyboard(false);
+      });
+  
+      return () => {
+        showSubscription.remove();
+        hideSubscription.remove();
+      };
+    }, []);
 
     const [isShowKeyboard, setIsShowKeyboard] = useState(false);
     const [state, setState] = useState(initialState);
     const [isFocus, setIsFocus] = useState({
+      login: false,
       email: false,
       password: false,
     });
@@ -46,11 +49,12 @@ const LoginScreen = ({ navigation }) => {
     const submitForm = () => {
       console.log(state);
       setState(initialState);
+      navigation.navigate("Home");
     };
 
     const [fontsLoaded] = useFonts({
-      "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
-      "Roboto-Medium": require("../assets/fonts/Roboto-Medium.ttf"),
+      "Roboto-Regular": require("../../assets/fonts/Roboto-Regular.ttf"),
+      "Roboto-Medium": require("../../assets/fonts/Roboto-Medium.ttf"),
     });
   
     const onLayoutRootView = useCallback(async () => {
@@ -66,11 +70,36 @@ const LoginScreen = ({ navigation }) => {
     return (
       <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container} onLayout={onLayoutRootView}>
-        <ImageBackground source={require("../assets/images/BG.png")} style={styles.image}>
+        <ImageBackground source={require("../../assets/images/BG.png")} style={styles.image}>
+        <View style={styles.iconRectangle}>
+            <Image source={require("../../assets/images/rectangle.png")} />
+            <Image
+              style={styles.iconAdd}
+              source={require("../../assets/images/add.png")}
+            />
+          </View>
+
           <View style={styles.formContainer}>
             <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"}>
                 <View style={styles.inputForm}>
-                  <Text style={styles.title}>Войти</Text>
+                  <Text style={styles.title}>Регистрация</Text>
+                  <TextInput 
+                    style={{...styles.input, 
+                            borderColor: isFocus.login ? `#FF6C00` : `#E8E8E8`,
+                            backgroundColor: isFocus.login ? `#ffffff` : `#F6F6F6`}} 
+                    placeholder="Логин"
+                    placeholderTextColor="#BDBDBD"
+                    onFocus={() => {
+                      setIsFocus({ ...isFocus, login: true })
+                    }}
+                    onBlur={() => {
+                      setIsFocus({ ...isFocus, login: false });
+                    }}
+                    value={state.login}
+                    onChangeText={(value) => {
+                      setState((prevState) => ({ ...prevState, login: value }));
+                    }}
+                    />
                   <TextInput 
                     style={{...styles.input, 
                       borderColor: isFocus.email ? `#FF6C00` : `#E8E8E8`,
@@ -119,16 +148,16 @@ const LoginScreen = ({ navigation }) => {
                 </View>
             </KeyboardAvoidingView> 
                 {!isShowKeyboard && 
-                (
-                <View>
-                <TouchableOpacity style={styles.button} onPress={submitForm}>
-                  <Text style={styles.buttonText}>Войти</Text>
-                </TouchableOpacity>
-                <Text style={styles.link} 
-                  onPress={() => navigation.navigate("Registration")}>
-                  Нет аккаунта? Зарегистрироваться</Text>
-                </View>)
-                }  
+                (<View>
+                  <TouchableOpacity style={styles.button} onPress={submitForm}>
+                    <Text style={styles.buttonText}>Зарегистрироваться</Text>
+                  </TouchableOpacity>
+                  <Text 
+                    style={styles.link} 
+                    onPress={() => navigation.navigate("Login")}>
+                    У вас уже есть аккаунт? Войти
+                  </Text>
+                </View>)}
             </View>   
             </ImageBackground>
       </View>
@@ -136,7 +165,7 @@ const LoginScreen = ({ navigation }) => {
     );
   };
 
-  export default LoginScreen;
+  export default RegistrationScreen;
 
   const styles = StyleSheet.create({
     container: {
@@ -158,7 +187,7 @@ const LoginScreen = ({ navigation }) => {
     },
     title: {
       textAlign: 'center',
-      marginTop: 32,
+      marginTop: 76,
       marginBottom: 32,
       color: '#212121', 
       fontSize: 30,
@@ -198,13 +227,13 @@ const LoginScreen = ({ navigation }) => {
       alignSelf: 'center',
       fontSize: 16,
       lineHeight: 19,
-      marginBottom: 144,
+      marginBottom: 76,
       fontFamily: "Roboto-Regular",
       color: "#1B4371",
     },
     passwordText: {
       position: "absolute",
-      top: "78%",
+      top: "85%",
       left: "80%",
       color: "#1B4371",
       fontSize: 16,
@@ -224,8 +253,3 @@ const LoginScreen = ({ navigation }) => {
       top: "65%",
     },
   });
-
-
-   
-
-
