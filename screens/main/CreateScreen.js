@@ -47,8 +47,8 @@ const CreateScreen = ({ navigation }) => {
         return(
                 <TouchableWithoutFeedback onPress={keyboardHide}>
                 <View style={styles.container}>
-                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
-                <View style={{paddingBottom: !isShowKeyboard ? 100 : 32}}>
+                <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : ""} >
+                <View>
                         <Camera style={styles.camera} ref={setCamera}>
                         {photo &&
                         <View style={styles.takePhotoContainer}>

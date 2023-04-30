@@ -62,6 +62,7 @@ export const useRoute = (isAuth) => {
                 tabBarActiveTintColor: "#FFFFFF",
                 title: "Создать публикацию",
                 headerTitleAlign: "center",
+                tabBarHideOnKeyboard: true,
               }}/>
           <MainTab.Screen 
             name="Profile" 
