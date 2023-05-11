@@ -11,6 +11,8 @@ import { StyleSheet,
         Keyboard } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import {authSignInUser} from "../../redux/auth/authOperations";
+import { useDispatch } from "react-redux";
 
 const initialState = {
   email: "",
@@ -18,6 +20,7 @@ const initialState = {
 };
 
 const LoginScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
       setIsShowKeyboard(true);
@@ -44,9 +47,8 @@ const LoginScreen = ({ navigation }) => {
       Keyboard.dismiss();
     };
     const submitForm = () => {
-      console.log(state);
+      dispatch(authSignInUser(state))
       setState(initialState);
-      navigation.navigate("Home");
     };
 
     const [fontsLoaded] = useFonts({

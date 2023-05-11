@@ -1,18 +1,17 @@
 import React from "react";
-import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
-import {useRoute} from "./router";
+// import { StatusBar } from "expo-status-bar";
+import Main from "./components/Main";
 
+
+import {Provider} from "react-redux";
+import {store} from "./redux/store";
 
 export default function App() {
-  const routing = useRoute({});
+
   return (
-    <>
-      <NavigationContainer>
-          {routing}
-      </NavigationContainer>
-      <StatusBar style="auto" />
-    </>
+    <Provider store={store}>
+      <Main/>
+    </Provider>
   );
 }
 
