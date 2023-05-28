@@ -75,6 +75,7 @@ export const useRoute = (isAuth) => {
                 tabBarActiveBackgroundColor: "#FF6C00",
                 tabBarActiveTintColor: "#FFFFFF",
                 headerTitleAlign: "center",
+                headerShown: false,
               }}/>
         </MainTab.Navigator>)
 };

@@ -1,8 +1,5 @@
 import React from "react";
-// import { StatusBar } from "expo-status-bar";
 import Main from "./components/Main";
-
-
 import {Provider} from "react-redux";
 import {store} from "./redux/store";
 

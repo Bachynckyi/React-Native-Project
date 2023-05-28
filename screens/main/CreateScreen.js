@@ -3,6 +3,10 @@ import { StyleSheet, View, Text, Platform, TextInput, TouchableOpacity, Keyboard
 import {Camera} from "expo-camera";
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
+import {storage, db} from "../../firebase/config";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { useSelector } from "react-redux";
+import { collection, addDoc } from "firebase/firestore";
 
 const CreateScreen = ({ navigation }) => {
         const [camera, setCamera] = useState(null);
@@ -11,6 +15,7 @@ const CreateScreen = ({ navigation }) => {
         const [formValues, setFormValues] = useState({ title: "", location: "" });
         const [isFormValid, setIsFormValid] = useState(false);
         const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+        const { login, userId } = useSelector((state) => state.auth);
 
         const keyboardHide = () => {
                 setIsShowKeyboard(false);
@@ -25,6 +30,7 @@ const CreateScreen = ({ navigation }) => {
         };
 
         useEffect(() => {
+
                 if (formValues.title && formValues.location && photo) {
                   setIsFormValid(true);
                 } else {
@@ -33,17 +39,44 @@ const CreateScreen = ({ navigation }) => {
               }, [formValues]);
 
         const sendPhoto = () => {
-                navigation.navigate("DefaultScreen", {
-                        title: formValues.title,
-                        location: formValues.location,
-                        photo: photo,
-                        locationCoordinate: location,
-                      });
+                uploadPostToServer();
+                navigation.navigate("DefaultScreen");
                 setFormValues({ title: "", location: "" });
                 setPhoto("");
                 setLocation("");
         };
 
+        const uploadPostToServer = async () => {
+                const photoURL = await uploadPhotoToServer(photo);
+                const docRef = await addDoc(collection(db, "posts"), {
+                        photoURL: photoURL,
+                        location: formValues.location,
+                        userId: userId,
+                        nickname: login,
+                        title: formValues.title,
+                        locationCoordinate: {
+                                latitude: location.coords.latitude,
+                                longitude: location.coords.longitude,
+                                },
+                        createdAt: Date.now().toString(),
+                });
+        };
+
+        const uploadPhotoToServer = async (photo) => {
+                try{
+                const response = await fetch(photo);
+                const file = await response.blob();
+                const uniquePostId = Date.now().toString();
+                const reference = ref(storage, `images/${uniquePostId}`);
+                const result = await uploadBytesResumable(reference, file);
+                const processedPhoto = await getDownloadURL(result.ref);
+                return processedPhoto;
+                }
+                catch(error){
+                console.log(error);
+                }
+                console.log(processedPhoto);
+        };
         return(
                 <TouchableWithoutFeedback onPress={keyboardHide}>
                 <View style={styles.container}>

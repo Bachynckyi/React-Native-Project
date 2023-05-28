@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { TouchableOpacity, Image, View, StyleSheet, FlatList, Text} from "react-native";
 import { Feather } from "@expo/vector-icons";
+import {db} from "../../../firebase/config";
+import { collection, getDocs, query, orderBy, doc, getDoc } from "firebase/firestore";
+import { useSelector } from "react-redux";
+
+
 
 const DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
+  const { login, userId } = useSelector((state) => state.auth);
 
+  const getAllPosts = async () => {
+    const postsRef = await collection(db, "posts");
+    const q = query(postsRef, orderBy("createdAt", "desc"));
+      const snapshot = await getDocs(q);
+      setPosts(snapshot.docs.map((doc) => ({...doc.data(), id: doc.id})));
+  };
+  
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    getAllPosts()
+  }, []);
   
   return (
     <View style={styles.container}>
@@ -19,7 +30,7 @@ const DefaultScreenPosts = ({ route, navigation }) => {
           style={styles.userPhoto}
         />
         <View style={{ flexDirection: "column" }}>
-          <Text style={styles.userName}>Natali Romanova</Text>
+          <Text style={styles.userName}>{login}</Text>
           <Text style={styles.userEmail}>email@example.com</Text>
         </View>
         </View>
@@ -30,14 +41,14 @@ const DefaultScreenPosts = ({ route, navigation }) => {
           <View style={styles.listContainer}>        
             <View>
                 <Image
-                  source={{ uri: item.photo }}
+                  source={{ uri: item.photoURL}}
                   style={{ width: 380, height: 200, borderRadius: 8}}
                 />
                 <Text style={styles.title}>{item.title}</Text>
             </View>
 
             <View style={styles.addInformation}>
-              <TouchableOpacity onPress={() => navigation.navigate("Comments")}>
+              <TouchableOpacity onPress={() => navigation.navigate("Comments", {postId: item.id})}>
                 <Feather
                   name="message-circle"
                   size={18}
